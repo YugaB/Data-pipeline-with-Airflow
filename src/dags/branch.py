@@ -3,9 +3,10 @@ import sys
 sys.path.append("..")
 sys.path.append("/usr/local/airflow/")
 sys.path.append("/usr/local/airflow/Movie/")
-sys.path.append("/usr/local/airflow/core/")
-sys.path.append("/usr/local/airflow/config/")
 sys.path.append("/usr/local/airflow/src/")
+sys.path.append("/usr/local/airflow/src/core/")
+sys.path.append("/usr/local/airflow/config/")
+
 
 from core.execute import core_aggregation, core_db_insert_to_db, core_get_data
 from datetime import datetime, timedelta
@@ -81,7 +82,9 @@ end = DummyOperator(
     trigger_rule = 'one_success',
     dag = dag
 )
-get_data >> branching
 
+get_data >> branching
 branching >> aggregation >> end
 branching >> db_insert_to_db >> end
+
+
