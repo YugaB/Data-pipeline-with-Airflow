@@ -44,8 +44,6 @@ dag = DAG(DAG_VERSION
           ,  concurrency=1
           ,  max_active_runs=1)
 
-
-
 get_data = PythonOperator(
     task_id='get_data',
     python_callable=core_get_data,
@@ -54,7 +52,6 @@ get_data = PythonOperator(
     dag=dag
 )
 
-
 aggregation = PythonOperator(
     task_id='aggregation',
     python_callable=core_aggregation,
@@ -62,7 +59,6 @@ aggregation = PythonOperator(
     provide_context=True,
     dag=dag
 )
-
 
 db_insert_to_db = PythonOperator(
     task_id='db_insert_to_db',
@@ -80,7 +76,12 @@ branching = BranchPythonOperator(
     dag=dag,
 )
 
+end = DummyOperator(
+    task_id = 'end',
+    trigger_rule = 'one_success',
+    dag = dag
+)
 get_data >> branching
 
-branching >> aggregation
-branching >> db_insert_to_db
+branching >> aggregation >> end
+branching >> db_insert_to_db >> end
